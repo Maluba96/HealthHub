@@ -4,8 +4,9 @@ const session = require('express-session');
 const sequelize = require('./config/db');
 const courseRoutes = require('./routes/courseRoutes');
 const userRoutes = require('./routes/userRoutes');
-const flash = require('connect-flash');
 const instructorRoutes = require('./routes/instructorRoutes');
+const flash = require('connect-flash');
+const categoryRoutes = require('./routes/categoryRoutes');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(flash());
 app.use('/courses', courseRoutes);
 app.use('/users', userRoutes);
 app.use('/api', instructorRoutes);
+app.use('/categories', categoryRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to HealthHub');
@@ -35,7 +37,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: err.message });
 });
 
-sequelize.sync({ force: false }).then(() => {
+sequelize.sync({ force: true }).then(() => {
   app.listen(3009, () => {
     console.log('Server is running on port 3009');
   });

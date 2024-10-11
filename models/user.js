@@ -20,9 +20,7 @@ const User = sequelize.define('User', {
     defaultValue: 'student',
   },
 }, {
-  timestamps: false, 
+  timestamps: false,
 });
 
 module.exports = User;
-
-console.log('User:', User);

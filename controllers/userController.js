@@ -9,22 +9,20 @@ exports.register = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
-    
+
     if (!['student', 'instructor', 'admin'].includes(role)) {
       return res.status(400).json({ message: 'Invalid role' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ name, email, password: hashedPassword, role: role });
+    const newUser = await User.create({ name, email, password: hashedPassword, role });
 
     req.session.userId = newUser.id;
     return res.status(201).json({ message: 'User registered successfully', userId: newUser.id });
   } catch (err) {
-    console.error(err);
     return res.status(500).json({ message: 'Server error' });
   }
 };
-//module.exports = { register };
 
 exports.login = async (req, res) => {
   try {
@@ -43,30 +41,23 @@ exports.login = async (req, res) => {
     req.session.userId = user.id;
     return res.status(200).json({ message: 'Login successful', userId: user.id });
   } catch (err) {
-    console.error(err);
     return res.status(500).json({ message: 'Server error' });
   }
 };
 
 exports.logout = (req, res) => {
-  try {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ message: 'Failed to logout' });
-      }
-      res.clearCookie('connect.sid');
-      return res.status(200).json({ message: 'Logout successful' });
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: 'Server error' });
-  }
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Failed to logout' });
+    }
+    res.clearCookie('connect.sid');
+    return res.status(200).json({ message: 'Logout successful' });
+  });
 };
 
 exports.deleteUser = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const deletedUser = await User.destroy({ where: { id: userId } });
+    const deletedUser = await User.destroy({ where: { id: req.params.id } });
 
     if (!deletedUser) {
       return res.status(404).json({ message: 'User not found' });
@@ -74,7 +65,6 @@ exports.deleteUser = async (req, res) => {
 
     return res.status(200).json({ message: 'User deleted successfully' });
   } catch (err) {
-    console.error(err);
     return res.status(500).json({ message: 'Server error' });
   }
 };
@@ -84,15 +74,13 @@ exports.getAllUsers = async (req, res) => {
     const users = await User.findAll();
     return res.status(200).json(users);
   } catch (err) {
-    console.error(err);
     return res.status(500).json({ message: 'Server error' });
   }
 };
 
 exports.getUserById = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const user = await User.findOne({ where: { id: userId } });
+    const user = await User.findOne({ where: { id: req.params.id } });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -100,7 +88,6 @@ exports.getUserById = async (req, res) => {
 
     return res.status(200).json(user);
   } catch (err) {
-    console.error(err);
     return res.status(500).json({ message: 'Server error' });
   }
 };
