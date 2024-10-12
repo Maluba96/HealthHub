@@ -29,7 +29,29 @@ app.use('/api', instructorRoutes);
 app.use('/categories', categoryRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Welcome to HealthHub');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.get('/api/courses', async (req, res) => {
+  try {
+    const courses = await sequelize.models.Courses.findAll({ include: ['Category', 'Instructor'] });
+    console.log('Courses Data:', courses);
+    res.json(courses);
+  } catch (err) {
+    console.error('Error fetching courses:', err);
+    res.status(500).json({ message: 'Failed to fetch courses' });
+  }
+});
+
+app.get('/api/instructors', async (req, res) => {
+  try {
+    const instructors = await sequelize.models.Instructors.findAll();
+    console.log('Instructors Data:', instructors);
+    res.json(instructors);
+  } catch (err) {
+    console.error('Error fetching instructors:', err);
+    res.status(500).json({ message: 'Failed to fetch instructors' });
+  }
 });
 
 app.use((err, req, res, next) => {
@@ -37,7 +59,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: err.message });
 });
 
-sequelize.sync({ force: true }).then(() => {
+sequelize.sync({ alter: true }).then(() => {
   app.listen(3009, () => {
     console.log('Server is running on port 3009');
   });

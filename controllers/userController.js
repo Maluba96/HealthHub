@@ -18,7 +18,7 @@ exports.register = async (req, res) => {
     const newUser = await User.create({ name, email, password: hashedPassword, role });
 
     req.session.userId = newUser.id;
-    return res.status(201).json({ message: 'User registered successfully', userId: newUser.id });
+    return res.redirect('/'); // Redirect to index page after registration
   } catch (err) {
     return res.status(500).json({ message: 'Server error' });
   }
@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
     }
 
     req.session.userId = user.id;
-    return res.status(200).json({ message: 'Login successful', userId: user.id });
+    return res.redirect('/'); // Redirect to index page after login
   } catch (err) {
     return res.status(500).json({ message: 'Server error' });
   }
@@ -51,7 +51,7 @@ exports.logout = (req, res) => {
       return res.status(500).json({ message: 'Failed to logout' });
     }
     res.clearCookie('connect.sid');
-    return res.status(200).json({ message: 'Logout successful' });
+    return res.redirect('/login.html'); // Redirect to login page after logout
   });
 };
 
