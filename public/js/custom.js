@@ -6,7 +6,6 @@
 
     elToggle.addEventListener('click', (e) => {
         e.preventDefault();
-
         if (elToggle.classList.contains('active')) {
             passwordInput.setAttribute('type', 'password');
             elToggle.classList.remove('active');
@@ -15,4 +14,12 @@
             elToggle.classList.add('active');
         }
     });
+
+    var logoutButton = document.getElementById('logoutButton');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'login.html';
+        });
+    }
 })();
